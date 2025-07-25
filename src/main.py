@@ -8,30 +8,45 @@ from rich.text import Text
 
 console = Console()
 
-# TODO: Have one pixel be drawn by 4 ascii chars instead of 1
+# TODO: make it better and less noisy
+# TODO: make it so it can record and save the ascii version as a video
+# TODO: integrate rich to show the output
 
 
+# resize to make it fit for the terminal
 def resize_video(frame, term_cols, term_rows):
     aspect_ratio_correction = 0.5
-    new_w = term_cols
-    new_h = int(term_rows / aspect_ratio_correction)
+    new_w = term_cols // 2
+    new_h = int((term_rows / aspect_ratio_correction) // 2)
     resized = cv2.resize(frame, (new_w, new_h))
     return resized
 
 
+# img to ascii
 def ascii_frame(frame):
-    data = "@B&#GP5JY7?~:^. "
-    rev_data = " .^:~?7YJ5PG#&B@"
+    data = "@B&#GP5JY7?~:^.⠀⠀"
     result = Text()
 
     for row in range(frame.shape[0]):
-        for column in range(frame.shape[1]):
-            pixel = frame[row, column]
+        line1 = ""
+        line2 = ""
+        for col in range(frame.shape[1]):
+            pixel = frame[row, col]
             char = data[int(pixel) * len(data) // 256]
-            result += char
-        result.append("\n")
-
+            line1 += char * 2
+            line2 += char * 2
+        result.append(line1 + "\n")
+        result.append(line2 + "\n")
     return result
+
+
+# convert frames to smthing that easier to decode for the ascii
+def convert_frame(frame, term_cols, term_rows):
+    resized_frame = resize_video(frame, term_cols, term_rows)
+    gray_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
+    output = ascii_frame(gray_frame)
+
+    return output
 
 
 if __name__ == "__main__":
@@ -50,16 +65,14 @@ if __name__ == "__main__":
                 console.print("[bold red]Failed to capture frame.[/bold red]")
                 break
 
-            resized_frame = resize_video(frame, term_cols, term_rows)
-            gray_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
-            ascii_output = ascii_frame(gray_frame)
+            ascii_output = convert_frame(frame, term_cols, term_rows)
 
-            cv2.imshow("feed", gray_frame)
+            cv2.imshow("feed", frame)
             cv2.waitKey(1)
 
             os.system("clear")
             console.print(ascii_output)
-            time.sleep(0.03)
+            time.sleep(0.01)
     except KeyboardInterrupt:
         pass
     finally:
