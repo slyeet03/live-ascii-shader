@@ -43,20 +43,21 @@ def ascii_frame(frame):
 def convert_frame(frame, term_cols, term_rows, threshold_val=100):
     resized_frame = resize_video(frame, term_cols, term_rows)
     gray_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
-    _, thresh_frame = cv2.threshold(gray_frame, threshold_val, 255, cv2.THRESH_TOZERO)
+    blur_frame = cv2.blur(gray_frame, (1, 1))
+    _, thresh_frame = cv2.threshold(blur_frame, threshold_val, 255, cv2.THRESH_TOZERO)
 
     output = ascii_frame(thresh_frame)
     return output
 
 
-"""
 # live feed for debugging
 def debug_feed(frame, term_cols, term_rows, threshold_val=100):
     resized_frame = resize_video(frame, term_cols, term_rows)
     gray_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
-    _, thresh_frame = cv2.threshold(gray_frame, threshold_val, 255, cv2.THRESH_TOZERO)
+    blur_frame = cv2.blur(gray_frame, (1, 1))
+    _, thresh_frame = cv2.threshold(blur_frame, threshold_val, 255, cv2.THRESH_TOZERO)
     return thresh_frame
-"""
+
 
 if __name__ == "__main__":
     vid_cam = cv2.VideoCapture(0)
@@ -65,7 +66,7 @@ if __name__ == "__main__":
         console.print("[bold red]Camera not found or failed to open.[/bold red]")
         exit()
 
-    threshold_val = 100
+    threshold_val = 80
     try:
         while True:
             term_cols, term_rows = shutil.get_terminal_size((80, 24))
