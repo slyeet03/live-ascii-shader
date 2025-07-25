@@ -2,6 +2,8 @@ import shutil
 import time
 
 import cv2
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
 from rich.console import Console
 from rich.text import Text
 
@@ -9,7 +11,9 @@ console = Console()
 
 # TODO: make it better and less noisy
 # TODO: make it so it can record and save the ascii version as a video
-# TODO: integrate rich to show the output
+
+threshold_val = 80
+fps = 15
 
 
 # resize to make it fit for the terminal
@@ -66,7 +70,6 @@ if __name__ == "__main__":
         console.print("[bold red]Camera not found or failed to open.[/bold red]")
         exit()
 
-    threshold_val = 80
     try:
         while True:
             term_cols, term_rows = shutil.get_terminal_size((80, 24))
@@ -84,8 +87,10 @@ if __name__ == "__main__":
 
             console.clear()
             console.print(ascii_output)
-            time.sleep(0.01)
+
+            time.sleep(1 / fps)
     except KeyboardInterrupt:
         pass
     finally:
         vid_cam.release()
+        cv2.destroyAllWindows()
