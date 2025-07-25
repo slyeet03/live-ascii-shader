@@ -1,4 +1,3 @@
-import os
 import shutil
 import time
 
@@ -24,7 +23,7 @@ def resize_video(frame, term_cols, term_rows):
 
 # img to ascii
 def ascii_frame(frame):
-    data = "@B&#GP5JY7?~:^.⠀⠀"
+    data = "@B&#GP5JY7?~:^.⠀"
     result = Text()
 
     for row in range(frame.shape[0]):
@@ -41,13 +40,23 @@ def ascii_frame(frame):
 
 
 # convert frames to smthing that easier to decode for the ascii
-def convert_frame(frame, term_cols, term_rows):
+def convert_frame(frame, term_cols, term_rows, threshold_val=100):
     resized_frame = resize_video(frame, term_cols, term_rows)
     gray_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
-    output = ascii_frame(gray_frame)
+    _, thresh_frame = cv2.threshold(gray_frame, threshold_val, 255, cv2.THRESH_TOZERO)
 
+    output = ascii_frame(thresh_frame)
     return output
 
+
+"""
+# live feed for debugging
+def debug_feed(frame, term_cols, term_rows, threshold_val=100):
+    resized_frame = resize_video(frame, term_cols, term_rows)
+    gray_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
+    _, thresh_frame = cv2.threshold(gray_frame, threshold_val, 255, cv2.THRESH_TOZERO)
+    return thresh_frame
+"""
 
 if __name__ == "__main__":
     vid_cam = cv2.VideoCapture(0)
@@ -56,6 +65,7 @@ if __name__ == "__main__":
         console.print("[bold red]Camera not found or failed to open.[/bold red]")
         exit()
 
+    threshold_val = 100
     try:
         while True:
             term_cols, term_rows = shutil.get_terminal_size((80, 24))
@@ -65,12 +75,13 @@ if __name__ == "__main__":
                 console.print("[bold red]Failed to capture frame.[/bold red]")
                 break
 
-            ascii_output = convert_frame(frame, term_cols, term_rows)
+            ascii_output = convert_frame(frame, term_cols, term_rows, threshold_val)
+            live_feed = debug_feed(frame, term_cols, term_rows, threshold_val)
 
-            cv2.imshow("feed", frame)
+            cv2.imshow("feed", live_feed)
             cv2.waitKey(1)
 
-            os.system("clear")
+            console.clear()
             console.print(ascii_output)
             time.sleep(0.01)
     except KeyboardInterrupt:
