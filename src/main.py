@@ -16,7 +16,7 @@ threshold_val = 80
 fps = 15
 
 
-# resize to make it fit for the terminal
+# resize to make it fit for the te rminal
 def resize_video(frame, term_cols, term_rows):
     aspect_ratio_correction = 0.5
     new_w = term_cols // 2
