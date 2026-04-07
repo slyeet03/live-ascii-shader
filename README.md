@@ -2,13 +2,16 @@
 
 A real-time webcam feed rendered as ASCII art directly in your terminal.
 
-## Demo
+## Screenshots
 
-```
-@@@@@&#&#GPGP555JJY77?~~::^^..  ..^^::~~7?YYJ55PGPG&#&#@@@@@
-@@&#&GPGP55JJY77?~~::^^..      ..^^::~~7?YYJ55PGPG&#&#@@@@@
-&#GPG5JY7?~:^.  ⠀              ⠀  .^:~?7YJ5GPG&#@@@@@@@@@
-```
+<p align="center">
+  <img src="assets/thumb.jpeg" width="70%" />
+</p>
+
+<p align="center">
+  <img src="assets/1.jpeg" width="45%" />
+  <img src="assets/2.jpeg" width="45%" />
+</p>
 
 ## Features
 
